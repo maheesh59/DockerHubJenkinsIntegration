@@ -1,0 +1,45 @@
+node{
+   stage('SCM Checkout'){
+     git 'https://github.com/KCTechnologiesDevOps/DockerHubJenkinsIntegration'
+   }
+   stage('Maven Packaging'){
+      def mavenHome =  tool name: 'maven-3', type: 'maven'   
+      sh "${mavenHome}/bin/mvn package"
+   }
+  stage('Static code analysis using SonarQube'){
+      def mavenHome =  tool name: 'maven-3', type: 'maven'   
+	  withSonarQubeEnv('first-sonarscanning'){
+      sh "${mavenHome}/bin/mvn sonar:sonar"
+	  }
+   }
+     stage("Quality Gate Status checking){
+          timeout(time: 1, unit: 'HOURS') {
+              def qg = waitForQualityGate()
+              if (qg.status != 'OK') {
+                   slackSend baseUrl: 'https://hooks.slack.com/services/',
+                   channel: '#demo',
+                   color: 'danger', 
+                   message: 'SonarQube code analysis has failed', 
+                   teamDomain: 'devops-realtime',
+                   tokenCredentialId: 'integration-token'
+                  error "Pipeline ajon has been failed do to quality gate failure: ${qg.status}"
+              }
+          }
+      }   
+	  
+   stage('Sending Email Notification'){
+     mail bcc: '', body: '''Hi Welcome to KC Technologies to learn Pipeline script to send Email Notifications
+      Thanks
+      KC Technologies''', cc: '', from: 'kctechnologiesdevops@gmail.com', replyTo: '', subject: 'Jenkins Email notification using pipeline script', to: 'kctechnologiesdevops@gmail.com'
+   } 
+   stage('Sending Slack Notification'){
+       slackSend baseUrl: 'https://hooks.slack.com/services/',
+       channel: '#demo',
+       color: 'good', 
+       message: 'Sending slack Notification', 
+       teamDomain: 'devops-realtime',
+       tokenCredentialId: 'integration-token'
+   }
+}
+
+  
