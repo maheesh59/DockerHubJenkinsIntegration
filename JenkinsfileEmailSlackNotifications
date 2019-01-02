@@ -4,7 +4,7 @@ node{
    }
    stage('Maven Packaging'){
       def mavenHome =  tool name: 'maven-3', type: 'maven'   
-      sh "${ mavenHome }/bin/mvn package"
+      sh "${mavenHome}/bin/mvn package"
    }
    stage('Sending Email Notification'){
      mail bcc: '', body: '''Hi Welcome to KC Technologies to learn Pipeline script to send Email Notifications
