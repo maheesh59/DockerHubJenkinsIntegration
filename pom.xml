@@ -5,7 +5,7 @@
 	<artifactId>docker-jenkins</artifactId>
 	<packaging>war</packaging>
 	<version>1.0.0</version>
-	<name>docker-jenkins</name>
+	<name>docker-jenkinsintegration</name>
 
 	<url>http://maven.apache.org</url>
 
